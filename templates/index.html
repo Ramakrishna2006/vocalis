@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vocalis — Speak in any language, export in any format</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="bg-orb orb1"></div>
+  <div class="bg-orb orb2"></div>
+  <div class="bg-orb orb3"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Z" fill="currentColor"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div>
+        <h1>Vocal<span>is</span></h1>
+        <p>Speak in any language, export in any format</p>
+      </div>
+    </div>
+    <button class="ghost-btn" id="themeToggle" title="Toggle theme">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+    </button>
+  </header>
+
+  <main class="layout">
+    <!-- LEFT: input -->
+    <section class="card editor-card">
+      <div class="tabs">
+        <button class="tab active" data-mode="voice">🎙️ Voice</button>
+        <button class="tab" data-mode="text">⌨️ Text</button>
+        <div class="tab-indicator"></div>
+      </div>
+
+      <!-- Voice panel -->
+      <div class="voice-panel" id="voicePanel">
+        <div class="mic-zone">
+          <button class="mic-btn" id="micBtn" aria-label="Start recording">
+            <span class="ring r1"></span><span class="ring r2"></span><span class="ring r3"></span>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Z" fill="currentColor"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <canvas id="wave" width="600" height="70"></canvas>
+          <div class="mic-status" id="micStatus">Tap the mic and start speaking</div>
+          <div class="timer" id="timer">00:00</div>
+        </div>
+
+        <div class="voice-options">
+          <label>Language
+            <select id="lang">
+              <option value="en-IN">English (India)</option>
+              <option value="en-US">English (US)</option>
+              <option value="en-GB">English (UK)</option>
+              <option value="te-IN">తెలుగు (Telugu)</option>
+              <option value="hi-IN">हिन्दी (Hindi)</option>
+              <option value="ta-IN">தமிழ் (Tamil)</option>
+              <option value="kn-IN">ಕನ್ನಡ (Kannada)</option>
+              <option value="ml-IN">മലയാളം (Malayalam)</option>
+              <option value="mr-IN">मराठी (Marathi)</option>
+              <option value="bn-IN">বাংলা (Bengali)</option>
+              <option value="gu-IN">ગુજરાતી (Gujarati)</option>
+              <option value="ur-IN">اردو (Urdu)</option>
+              <option value="es-ES">Español</option>
+              <option value="fr-FR">Français</option>
+              <option value="de-DE">Deutsch</option>
+            </select>
+          </label>
+          <label class="switch-row">
+            <input type="checkbox" id="autoPunct" checked>
+            <span class="switch"></span> Voice commands <small>(“new line”, “full stop”, “comma”…)</small>
+          </label>
+        </div>
+        <div class="interim" id="interim"></div>
+      </div>
+
+      <!-- Editor (shared) -->
+      <div class="field">
+        <input id="docTitle" class="title-input" placeholder="Document title" value="My Document">
+      </div>
+      <div class="editor-wrap">
+        <textarea id="editor" placeholder="Your words appear here… type directly, or dictate with the mic. Leave a blank line between paragraphs."></textarea>
+        <div class="editor-toolbar">
+          <span id="stats">0 words · 0 characters</span>
+          <div class="tool-btns">
+            <button class="chip" id="btnCopy">Copy</button>
+            <button class="chip" id="btnUpload">Import .txt</button>
+            <button class="chip" id="btnClean">Tidy up</button>
+            <button class="chip danger" id="btnClear">Clear</button>
+            <input type="file" id="fileInput" accept=".txt,.md" hidden>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: export -->
+    <aside class="card export-card">
+      <h2>Export as</h2>
+      <div class="formats" id="formats">
+        <button class="fmt active" data-fmt="pdf"><b>PDF</b><span>Print-ready</span></button>
+        <button class="fmt" data-fmt="docx"><b>DOCX</b><span>Microsoft Word</span></button>
+        <button class="fmt" data-fmt="txt"><b>TXT</b><span>Plain text</span></button>
+        <button class="fmt" data-fmt="md"><b>MD</b><span>Markdown</span></button>
+        <button class="fmt" data-fmt="html"><b>HTML</b><span>Web page</span></button>
+        <button class="fmt" data-fmt="rtf"><b>RTF</b><span>Rich text</span></button>
+      </div>
+
+      <h3>Options</h3>
+      <label class="opt">Author (optional)
+        <input id="author" placeholder="Your name">
+      </label>
+      <label class="opt">Font size <output id="fsOut">12 pt</output>
+        <input type="range" id="fontSize" min="8" max="24" value="12">
+      </label>
+      <div class="opt">Alignment
+        <div class="seg" id="align">
+          <button data-al="left" class="active">Left</button>
+          <button data-al="center">Center</button>
+          <button data-al="right">Right</button>
+          <button data-al="justify">Justify</button>
+        </div>
+      </div>
+
+      <button class="primary-btn" id="convertBtn">
+        <span class="btn-label">Download <span id="fmtLabel">PDF</span></span>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14"/></svg>
+      </button>
+
+      <div class="history">
+        <h3>Recent exports</h3>
+        <ul id="historyList"><li class="empty">Nothing yet</li></ul>
+      </div>
+    </aside>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
