@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Vocalis logo: sound waves turning into lines of text">
+  <defs>
+    <linearGradient id="vbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2a2a2a"/><stop offset="1" stop-color="#050505"/>
+    </linearGradient>
+    <linearGradient id="vshine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.14"/><stop offset="0.5" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="vglow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.16"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="vwave" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#9a9a9a"/><stop offset="1" stop-color="#ffffff"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#vbg)"/>
+  <rect width="512" height="512" rx="116" fill="url(#vshine)"/>
+  <circle cx="256" cy="256" r="200" fill="url(#vglow)"/>
+  <rect x="3" y="3" width="506" height="506" rx="113" fill="none" stroke="#ffffff" stroke-opacity="0.14" stroke-width="6"/>
+  <!-- voice: sound-wave bars -->
+  <g fill="url(#vwave)">
+    <rect x="98"  y="211" width="26" height="90"  rx="13"/>
+    <rect x="142" y="161" width="26" height="190" rx="13"/>
+    <rect x="186" y="116" width="26" height="280" rx="13"/>
+    <rect x="230" y="186" width="26" height="140" rx="13"/>
+  </g>
+  <!-- document: the words written out as lines -->
+  <g fill="#ffffff">
+    <rect x="282" y="176" width="132" height="26" rx="13"/>
+    <rect x="282" y="243" width="132" height="26" rx="13"/>
+    <rect x="282" y="310" width="84"  height="26" rx="13"/>
+  </g>
+</svg>

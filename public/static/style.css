@@ -58,8 +58,7 @@ body.light .bg-orb { opacity: .1; }
 /* header */
 .topbar { max-width: 1240px; margin: 0 auto; padding: 28px 24px 8px; display: flex; justify-content: space-between; align-items: center; }
 .brand { display: flex; gap: 14px; align-items: center; }
-.logo { width: 50px; height: 50px; border-radius: 16px; background: var(--grad); display: grid; place-items: center; color: var(--on-accent); box-shadow: 0 10px 30px var(--glow); }
-.logo svg { width: 26px; height: 26px; }
+.logo { width: 52px; height: 52px; display: block; border-radius: 12px; box-shadow: 0 10px 30px var(--glow); }
 .brand h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -.02em; }
 .brand h1 span { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .brand p { color: var(--muted); font-size: .9rem; }

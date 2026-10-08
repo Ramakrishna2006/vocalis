@@ -1,6 +1,8 @@
 <div align="center">
 
-# 🎙️ Vocalis
+<img src="public/static/logo.svg" alt="Vocalis logo" width="128" height="128">
+
+# Vocalis
 
 *Latin for “of the voice”*
 
@@ -18,6 +20,14 @@ A beautiful, local-first web app built with Flask. Dictate in 15 languages (incl
 </div>
 
 ---
+
+## 🎨 The logo
+
+<img src="public/static/logo.svg" alt="Vocalis logo" width="64" align="left">
+
+The Vocalis logo shows the app's whole idea in one mark: **sound-wave bars on the left turn into lines of text on the right**, so speech becomes a written document. It uses the app's black-and-white theme and lives in `public/static/logo.svg`. The app uses it in the header and as the browser-tab icon.
+
+<br clear="left">
 
 ## ✨ Features
 
@@ -143,7 +153,7 @@ git push
 
 ## ⚙️ How it works — step by step
 
-1. **You speak.** `static/app.js` uses the browser's **Web Speech API** (`SpeechRecognition`) to turn speech into text. Interim words show live in blue. Final words are added to the editor.
+1. **You speak.** `public/static/app.js` uses the browser's **Web Speech API** (`SpeechRecognition`) to turn speech into text. Interim words show live in grey. Final words are added to the editor.
 2. **Voice commands are applied.** Phrases like "new line" or "comma" are swapped for real punctuation, and sentences are capitalised.
 3. **The waveform animates.** The **Web Audio API** reads microphone volume and draws bars on a `<canvas>`.
 4. **Your draft is saved.** The text and title are kept in `localStorage`, so a refresh doesn't lose your work.
@@ -159,14 +169,46 @@ vocalis/
 ├── requirements.txt
 ├── templates/
 │   └── index.html          # UI
-├── static/
-│   ├── style.css           # Styles & animations
-│   └── app.js              # Speech recognition, editor, export logic
+├── public/
+│   └── static/             # Served by Vercel's CDN (and by Flask locally)
+│       ├── logo.svg        # Logo (header, browser tab, README)
+│       ├── style.css       # Styles & animations
+│       └── app.js          # Speech recognition, editor, export logic
+├── fonts/                  # Noto fonts for PDFs (English, Telugu, Hindi, Tamil) + OFL.txt licence
 ├── tests/
 │   └── test_app.py         # Pytest suite (all formats)
-├── fonts/                  # Optional: drop Unicode .ttf fonts here
 └── .github/workflows/
     └── tests.yml           # GitHub Actions CI
+```
+
+## ▲ Deploy to Vercel — step by step
+
+Vercel runs the Flask app as a serverless function and serves everything in `public/` from its CDN. No `vercel.json` is needed: Vercel finds the `app` object in `app.py` automatically.
+
+**Step 1 — Push the latest code to GitHub** (see the upload steps above).
+
+**Step 2 — Import the project**
+1. Sign in at [vercel.com](https://vercel.com) with your GitHub account.
+2. Click **Add New… → Project**.
+3. Find `vocalis` in the list and click **Import**. If it is missing, click **Adjust GitHub App Permissions** and give Vercel access to the repository.
+
+**Step 3 — Check the settings**
+- **Framework Preset:** Flask (detected automatically; choose it if it shows "Other").
+- **Root Directory:** `./`
+- Leave the build and install commands empty. Vercel installs `requirements.txt` by itself.
+
+**Step 4 — Deploy**
+Click **Deploy** and wait about a minute. You get a link like `https://vocalis-xxxx.vercel.app`.
+
+**Step 5 — Try it**
+Open the link in Chrome or Edge, allow the microphone, dictate a few lines and download a PDF.
+
+**Updating the live site:** every `git push` to `main` redeploys automatically.
+
+**Run it exactly like Vercel on your computer (optional):**
+```bash
+npm i -g vercel
+vercel dev
 ```
 
 ## 🔌 API
@@ -194,8 +236,8 @@ pytest -v
 ## 📝 Notes
 
 - Voice typing uses the browser’s Web Speech API, which needs an internet connection. Typing and exporting work fully offline.
-- Microphone access works on `localhost` without HTTPS.
-- **Indian-language PDFs:** On Windows the app uses the built-in *Nirmala UI* font automatically. On macOS/Linux, download a [Noto font](https://fonts.google.com/noto) (e.g. `NotoSansTelugu-Regular.ttf`) and put it in the `fonts/` folder.
+- Microphone access works on `localhost` without HTTPS, and on Vercel because every Vercel site uses HTTPS.
+- **Indian-language PDFs:** the project includes [Noto Sans](https://fonts.google.com/noto) fonts in `fonts/` (Latin, Telugu, Devanagari for Hindi/Marathi, and Tamil), so PDFs look the same on Windows, macOS, Linux and Vercel. To support another script, add its Noto `.ttf` file to `fonts/` and it is used automatically. The fonts are licensed under the SIL Open Font License (`fonts/OFL.txt`).
 
 ## 🛠️ Built with
 

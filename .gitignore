@@ -21,6 +21,5 @@ Thumbs.db
 *.rtf
 output/
 
-# Large font files (users add their own)
-fonts/*.ttf
-!fonts/.gitkeep
+# Vercel
+.vercel/

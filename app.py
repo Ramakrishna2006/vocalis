@@ -9,14 +9,16 @@ import html
 import glob
 from datetime import datetime
 
-from flask import Flask, render_template, request, send_file, jsonify
+from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for
 
 from docx import Document
 from docx.shared import Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from fpdf import FPDF
 
-app = Flask(__name__)
+# Static files live in public/static: Vercel serves the public/ folder from its CDN,
+# and Flask serves the same folder when you run the app on your own computer.
+app = Flask(__name__, static_folder="public/static", static_url_path="/static")
 
 FORMATS = {
     "pdf":  ("application/pdf", "pdf"),
@@ -108,10 +110,26 @@ def build_docx(title, text, author, font_size, align, **_):
     return buf.getvalue()
 
 
-def find_unicode_font():
-    """Look for a TTF that covers Indian scripts / broad Unicode."""
-    here = os.path.dirname(os.path.abspath(__file__))
-    candidates = glob.glob(os.path.join(here, "fonts", "*.ttf")) + [
+HERE = os.path.dirname(os.path.abspath(__file__))
+FONT_DIR = os.path.join(HERE, "fonts")
+MAIN_FONT = "NotoSans-Regular.ttf"
+
+
+def find_fonts():
+    """Return (main font, [fallback fonts]) for PDFs.
+
+    The project ships Noto fonts in fonts/, so PDFs show English, Telugu,
+    Hindi and Tamil correctly on any computer or server (including Vercel).
+    If those files are missing, fall back to a font installed on the system.
+    """
+    main = os.path.join(FONT_DIR, MAIN_FONT)
+    if os.path.isfile(main):
+        extras = sorted(
+            p for p in glob.glob(os.path.join(FONT_DIR, "*.ttf"))
+            if os.path.basename(p) != MAIN_FONT
+        )
+        return main, extras
+    for c in [
         r"C:\Windows\Fonts\Nirmala.ttf",       # Windows: Telugu, Hindi, Tamil...
         r"C:\Windows\Fonts\NirmalaUI.ttf",
         r"C:\Windows\Fonts\arial.ttf",
@@ -119,11 +137,10 @@ def find_unicode_font():
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
         "/Library/Fonts/Arial Unicode.ttf",
         "/System/Library/Fonts/Supplemental/Arial Unicode.ttf",
-    ]
-    for c in candidates:
+    ]:
         if os.path.isfile(c):
-            return c
-    return None
+            return c, []
+    return None, []
 
 
 def build_pdf(title, text, author, font_size, align, **_):
@@ -132,10 +149,18 @@ def build_pdf(title, text, author, font_size, align, **_):
     pdf.add_page()
     pdf.set_margins(20, 20, 20)
 
-    font_path = find_unicode_font()
+    font_path, fallback_paths = find_fonts()
     if font_path:
         pdf.add_font("Body", "", font_path)
         family = "Body"
+        # Extra fonts are used for any letters the main font doesn't have
+        # (for example Telugu or Hindi inside an English document).
+        fallbacks = []
+        for i, path in enumerate(fallback_paths):
+            pdf.add_font(f"Fallback{i}", "", path)
+            fallbacks.append(f"Fallback{i}")
+        if fallbacks:
+            pdf.set_fallback_fonts(fallbacks)
         try:
             pdf.set_text_shaping(True)   # proper rendering of complex scripts (needs uharfbuzz)
         except Exception:
@@ -202,6 +227,13 @@ BUILDERS = {"pdf": build_pdf, "docx": build_docx, "txt": build_txt,
 
 
 # ---------------------------------------------------------------- routes
+@app.route("/favicon.ico")
+def favicon():
+    # Browsers ask for /favicon.ico on their own; send them the Vocalis logo
+    # so an old icon from another app on the same address is never shown.
+    return redirect(url_for("static", filename="logo.svg", v=2), code=307)
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
